@@ -32,21 +32,31 @@ function creerCollegue(collegue, callback) {
     });
 }
 
-function modifierCollegue(matricule, collegue, callback) {
+function modifierEmail(matricule, email, callback) {
     request.patch('https://clementsamnael-collegue-api.herokuapp.com/collegues/collegues' + matricule, {
         json: true, body: {
-            'email': collegue.email,
-            'photoUrl': collegue.photoUrl
+            'email': email
         }
     }, function (errr, res, body) {
         var matriculeTrouves = body;
         callback(res, body);
     });
+}
 
+function modifierPhotoUrl(matricule, photoUrl, callback) {
+    request.patch('https://clementsamnael-collegue-api.herokuapp.com/collegues/collegues' + matricule, {
+        json: true, body: {
+            'photoUrl': photUrl
+        }
+    }, function (errr, res, body) {
+        var matriculeTrouves = body;
+        callback(res, body);
+    });
 }
 
 
 exports.rechercherColleguesParNom = rechercherColleguesParNom;
 exports.recherhcherCollegueParMatricule = recherhcherCollegueParMatricule;
 exports.creerCollegue = creerCollegue;
-exports.modifierCollegue = modifierCollegue;
+exports.modifierEmail = modifierEmail;
+exports.modifierPhotoUrl = modifierPhotoUrl;
