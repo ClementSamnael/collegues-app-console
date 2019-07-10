@@ -1,59 +1,64 @@
-var lg = console.log;
+const request = require('request-promise-native');
 
-var request = require('request');
+class Service {
 
-function rechercherColleguesParNom(nomRechercher, callback) {
-    request('https://clementsamnael-collegue-api.herokuapp.com/collegues?nomCollegue=' + nomRechercher, { json: true }, function (errr, res, body) {
-        var tableauColleguesTrouves = body;
-        callback(tableauColleguesTrouves);
-    });
-    //La fonction ne retourne rien (pas de return)
+    /* rechercherColleguesParNom(nomRechercher, callback) {
+        request(`https://clementsamnael-collegue-api.herokuapp.com/collegues?nomCollegue=${nomRechercher}`, { json: true }, function (errr, res, body) {
+            let tableauColleguesTrouves = body;
+            callback(tableauColleguesTrouves);
+        });
+        //La fonction ne retourne rien (pas de return)
+    } */
+
+    rechercherColleguesParNom(nomRecherhcer) {
+        return request(`https://clementsamnael-collegue-api.herokuapp.com/collegues?nomCollegue=${nomRechercher}`, { json: true }
+            .then(matricule => {
+                return Promise.all(matricule.map(unMatricule => request(`https://clementsamnael-collegue-api.herokuapp.com/collegues/${unMatricule}`), { json: true }))
+            }));
+    }
+
+    recherhcherCollegueParMatricule(matricule, callback) {
+        request(`https://clementsamnael-collegue-api.herokuapp.com/collegues/${matricule}`, {json: true }, function (errr, res, body) {
+            let matriculeTrouves = body;
+            callback(matriculeTrouves);
+        });
+    }
+
+    creerCollegue(collegue) {
+        request.post(`https://clementsamnael-collegue-api.herokuapp.com/collegues`, {
+            json: true, body: {
+                'nom': collegue.nom,
+                'prenom': collegue.prenom,
+                'email': collegue.email,
+                'dateDeNaissance': collegue.dateDeNaissance,
+                'photoUrl': collegue.photoUrl
+            }
+        });
+    }
+
+    modifierEmail(matricule, email, callback) {
+        request.patch(`https://clementsamnael-collegue-api.herokuapp.com/collegues/collegues/${matricule}`, {
+            json: true, body: {
+                'email': email
+            }
+        }, function (errr, res, body) {
+            let matriculeTrouves = body;
+            callback(res, body);
+        });
+    }
+
+    modifierPhotoUrl(matricule, photoUrl, callback) {
+        request.patch(`https://clementsamnael-collegue-api.herokuapp.com/collegues/collegues/${matricule}`, {
+            json: true, body: {
+                'photoUrl': photUrl
+            }
+        }, function (errr, res, body) {
+            let matriculeTrouves = body;
+            callback(res, body);
+        });
+    }
+
 }
-
-
-function recherhcherCollegueParMatricule(matricule, callback) {
-    request('https://clementsamnael-collegue-api.herokuapp.com/collegues/' + matricule, { json: true }, function (errr, res, body) {
-        var matriculeTrouves = body;
-        callback(matriculeTrouves);
-    });
-}
-
-function creerCollegue(collegue, callback) {
-    request.post('https://clementsamnael-collegue-api.herokuapp.com/collegues', {
-        json: true, body: {
-            'nom': collegue.nom,
-            'prenom': collegue.prenom,
-            'email': collegue.email,
-            'dateDeNaissance': collegue.dateDeNaissance,
-            'photoUrl': collegue.photoUrl
-        }
-    }, function (errr, res, body) {
-        callback(res, body);
-    });
-}
-
-function modifierEmail(matricule, email, callback) {
-    request.patch('https://clementsamnael-collegue-api.herokuapp.com/collegues/collegues' + matricule, {
-        json: true, body: {
-            'email': email
-        }
-    }, function (errr, res, body) {
-        var matriculeTrouves = body;
-        callback(res, body);
-    });
-}
-
-function modifierPhotoUrl(matricule, photoUrl, callback) {
-    request.patch('https://clementsamnael-collegue-api.herokuapp.com/collegues/collegues' + matricule, {
-        json: true, body: {
-            'photoUrl': photUrl
-        }
-    }, function (errr, res, body) {
-        var matriculeTrouves = body;
-        callback(res, body);
-    });
-}
-
 
 exports.rechercherColleguesParNom = rechercherColleguesParNom;
 exports.recherhcherCollegueParMatricule = recherhcherCollegueParMatricule;

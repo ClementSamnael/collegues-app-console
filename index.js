@@ -1,7 +1,6 @@
-var lg = console.log;
+const lg = console.log;
 
 lg('** Administration Collegues **');
 
-var start = require("./presentation");
-var service = require("./service");
+const start = require("./presentation");
 start.start();
