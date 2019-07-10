@@ -18,5 +18,19 @@ function recherhcherCollegueParMatricule(matricule, callback){
     });
 }
 
+function creerCollegue(collegue, callback){
+    request.post('https://clementsamnael-collegue-api.herokuapp.com/collegues', {json: true, body:{
+        'nom' : collegue.nom,
+        'prenom' : collegue.prenom,
+        'email' : collegue.email,
+        'dateDeNaissance' : collegue.dateDeNaissance,
+        'photoUrl' : collegue.photoUrl
+    }}, function(errr, res, body){
+            callback(res,body);
+        });
+}
+
+
 exports.rechercherColleguesParNom = rechercherColleguesParNom;
 exports.recherhcherCollegueParMatricule = recherhcherCollegueParMatricule;
+exports.creerCollegue = creerCollegue;

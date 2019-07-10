@@ -12,6 +12,9 @@ var rl = readline.createInterface({
 
 function start(){
     lg("1. Recherhche un collègue par nom");
+    lg("2. Créer un collègue");
+    lg("3. Modifier l'email");
+    lg("4. Modifier la photo");
     lg("99. Sortir");
     // récupération de la saisie utilisateur
     rl.question('Votre choix : ', function(saisie) {
@@ -19,8 +22,19 @@ function start(){
             case '1' :
                 rechercherCollegues();
                 break;
+            case'2':
+                ajouterCollegue();
+                break;
+            case'3':
+                lg('Fonction non implémentée');
+                rl.close();
+                break;
+            case'4':
+                lg('Fonction non implémentée');
+                rl.close();
+                break;
             case '99' :
-                lg("Aurevoir");
+                lg("Au revoir");
                 rl.close();
                 break;
             default : 
@@ -36,7 +50,7 @@ function rechercherCollegues(){
         var i = 0;
         service.rechercherColleguesParNom(saisie, function(colleguesTrouves){
             lg('>> Recherche en cours du nom ' + saisie);
-            lg(colleguesTrouves);
+            //lg(colleguesTrouves);
             tableCollegue = colleguesTrouves.length;
             colleguesTrouves.forEach(function(element){
                 service.recherhcherCollegueParMatricule(element, function(colleguesTrouves){
@@ -50,6 +64,31 @@ function rechercherCollegues(){
         });
     })
 }
+
+function ajouterCollegue(){
+    var collegueAAjouter = {};
+    rl.question('Nom  : ', function(nom) {
+        collegueAAjouter.nom = nom;
+        rl.question('Prenom  : ', function(prenom) {
+            collegueAAjouter.prenom = prenom;
+            rl.question('Email  : ', function(email) {
+                collegueAAjouter.email = email;
+                rl.question('Date de naissance  : ', function(dateDeNaissance) {
+                    collegueAAjouter.dateDeNaissance = dateDeNaissance;
+                    rl.question('PhotoUrl  : ', function(photoUrl) {
+                        collegueAAjouter.photoUrl = photoUrl;
+                        service.creerCollegue(collegueAAjouter,function(res,body){
+                            lg(res);
+                            lg(body);
+                            start();
+                        });
+                    });
+                });
+            });
+        });
+    });
+}
+
 
 
 exports.start = start;
