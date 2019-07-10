@@ -90,10 +90,7 @@ function ajouterCollegue() {
 }
 
 function modifierEmail() {
-    var collegue = rechercherCollegues;
-    if(collegue > 2){
-        rl.question('Prenom  : ', function (prenom) {
-    }
+    
 }
 
 exports.start = start;
