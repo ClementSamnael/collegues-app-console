@@ -11,11 +11,11 @@ var rl = readline.createInterface({
 });
 
 function start() {
-    lg("1. Recherhche un collègue par nom");
-    lg("2. Créer un collègue");
-    lg("3. Modifier l'email");
-    lg("4. Modifier la photo");
-    lg("99. Sortir");
+    lg('1. Recherhche un collègue par nom');
+    lg('2. Créer un collègue');
+    lg('3. Modifier l\'email');
+    lg('4. Modifier la photo');
+    lg('99. Sortir');
     // récupération de la saisie utilisateur
     rl.question('Votre choix : ', function (saisie) {
         switch (saisie) {
@@ -34,7 +34,7 @@ function start() {
                 rl.close();
                 break;
             case '99':
-                lg("Au revoir");
+                lg('Au revoir');
                 rl.close();
                 break;
             default:
@@ -88,5 +88,6 @@ function ajouterCollegue() {
         });
     });
 }
+
 
 exports.start = start;
