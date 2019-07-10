@@ -1,4 +1,4 @@
-var lg= console.log;
+var lg = console.log;
 
 lg('** Administration Collegues **');
 
