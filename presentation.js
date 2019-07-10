@@ -17,13 +17,7 @@ function start(){
     rl.question('Votre choix : ', function(saisie) {
         switch(saisie){
             case '1' :
-                rl.question('Nom recherché : ', function(saisie) {
-                    service.rechercherColleguesParNom(saisie, function(colleguesTrouves){
-                        lg('>> Recherche en cours du nom ' + saisie);
-                        lg(colleguesTrouves);
-                    });
-                    rl.close();
-                });
+                rechercherCollegues();
                 break;
             case '99' :
                 lg("Aurevoir");
@@ -35,5 +29,27 @@ function start(){
         }   
     });
 }   
+
+function rechercherCollegues(){
+    rl.question('Nom recherché : ', function(saisie) {
+        var tableCollegue;
+        var i = 0;
+        service.rechercherColleguesParNom(saisie, function(colleguesTrouves){
+            lg('>> Recherche en cours du nom ' + saisie);
+            lg(colleguesTrouves);
+            tableCollegue = colleguesTrouves.length;
+            colleguesTrouves.forEach(function(element){
+                service.recherhcherCollegueParMatricule(element, function(colleguesTrouves){
+                    lg(colleguesTrouves.nom + ' ' + colleguesTrouves.prenom + ' (' + colleguesTrouves.dateDeNaissance + ')');
+                    i++;
+                    if(i === tableCollegue){
+                        start();
+                    }
+                 });
+            });
+        });
+    })
+}
+
 
 exports.start = start;
