@@ -1,7 +1,5 @@
-const lg = console.log;
-
+var lg = console.log;
 lg('** Administration Collegues **');
-
-const start = require("./presentation");
-const service = require("./service");
+var start = require("./presentation");
+var service = require("./service");
 start.start();
