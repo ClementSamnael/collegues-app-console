@@ -1,6 +1,7 @@
 import Service from './service';
 import { Collegue } from './domain';
 
+
 const lg = console.log;
 // récupération du module `readline`
 const readline = require('readline');
@@ -20,38 +21,38 @@ export default class Presentation {
     }
 
 
-    start() {
-        lg('1. Recherhche un collègue par nom');
-        lg('2. Créer un collègue');
-        lg('3. Modifier l\'email');
-        lg('4. Modifier la photo');
-        lg('99. Sortir');
-        // récupération de la saisie utilisateur
-        rl.question('Votre choix : ')
-            .then((saisie: string) => {
-                switch (saisie) {
-                    case '1':
-                        this.rechercherCollegues();
-                        break;
-                    case '2':
-                        this.ajouterCollegue();
-                        break;
-                    case '3':
-                        lg('Fonction non implémentée');
-                        break;
-                    case '4':
-                        lg('Fonction non implémentée');
-                        break;
-                    case '99':
-                        lg('Au revoir');
-                        rl.close();
-                        break;
-                    default:
-                        lg('Saisie invalide');
-                        rl.close();
-                        this.start();
-                }
-            });
+    start(): void {
+        lg(`1. Recherhche un collègue par nom
+        2. Créer un collègue
+        3. Modifier l\'email
+        4. Modifier la photo
+        99. Sortir`);
+        rl.question('Votre choix ? : ', (saisie: string) => {
+            switch (saisie) {
+                case '1':
+                    this.rechercherCollegues();
+                    break;
+                case '2':
+                    this.ajouterCollegue();
+                    break;
+                case '3':
+                    lg('Fonction non implémentée');
+                    rl.close();
+                    break;
+                case '4':
+                    lg('Fonction non implémentée');
+                    rl.close();
+                    break;
+                case '99':
+                    lg('Au revoir');
+                    rl.close();
+                    break;
+                default:
+                    lg('Saisie invalide');
+                    rl.close();
+                    this.start();
+            }
+        });
     }
 
     //Recherche un collegue avec le nom et le matricule
@@ -100,20 +101,20 @@ export default class Presentation {
     }
 
     //Modifie l'email d'un collegue. Le collegue choisi est sélectionné avec son matricule
-    /* modifierEmail():void {
-        let collegueAModifier: Collegue;
-        rl.question('>> Saisissez le matricule du collègue : ', (matricule: string) => {
-            collegueAModifier.matricule = matricule;
-            rl.question('>> Saisissez le nouvel e-mail du collègue : ', (email: string) => {
-                collegueAModifier.email = email;
-                this.service.modifierEmail(collegueAModifier);
-                this.service.rechercherCollegueParMatricule(matricule, (collegueTrouve: Collegue) => {
-                    lg(`${collegueTrouve.nom}, ${collegueTrouve.prenom}, '\nNouveau email :', ${collegueTrouve.email}`);
-                    this.start();
-                });
-            });
-        })
-    } */
+    /*  modifierEmail():void {
+         let collegueAModifier: Collegue;
+         rl.question('>> Saisissez le matricule du collègue : ', (matricule: string) => {
+             collegueAModifier.matricule = matricule;
+             rl.question('>> Saisissez le nouvel e-mail du collègue : ', (email: string) => {
+                 collegueAModifier._email = email;
+                 this.service.modifierEmail(matricule,email);
+                 this.service.rechercherCollegueParMatricule(matricule, (collegueTrouve: Collegue) => {
+                     lg(`${collegueTrouve.nom}, ${collegueTrouve.prenom}, '\nNouveau email :', ${collegueTrouve.email}`);
+                     this.start();
+                 });
+             });
+         })
+     } */
     //Modifie l' url de la photo d'un collegue. Le collegue choisi est sélectionné avec son matricule
     /* modifierPhoto():void {
         let collegueAModifier: Collegue;
