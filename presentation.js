@@ -11,6 +11,8 @@ const rl = readline.createInterface({
 });
 
 class Presentation {
+    constructor() {
+    }
 
     start() {
         lg('1. Recherhche un collègue par nom');
@@ -19,52 +21,44 @@ class Presentation {
         lg('4. Modifier la photo');
         lg('99. Sortir');
         // récupération de la saisie utilisateur
-        rl.question('Votre choix : ', function (saisie) {
-            switch (saisie) {
-                case '1':
-                    rechercherCollegues();
-                    break;
-                case '2':
-                    ajouterCollegue();
-                    break;
-                case '3':
-                    lg('Fonction non implémentée');
-                    rl.close();
-                    break;
-                case '4':
-                    lg('Fonction non implémentée');
-                    rl.close();
-                    break;
-                case '99':
-                    lg('Au revoir');
-                    rl.close();
-                    break;
-                default:
-                    rl.close();
-                    break;
-            }
-        });
+        rl.question('Votre choix : ')
+            .then(saisie => {
+                switch (saisie) {
+                    case '1':
+                        rechercherCollegues();
+                        break;
+                    case '2':
+                        ajouterCollegue();
+                        break;
+                    case '3':
+                        lg('Fonction non implémentée');
+                        break;
+                    case '4':
+                        lg('Fonction non implémentée');
+                        break;
+                    case '99':
+                        lg('Au revoir');
+                        rl.close();
+                        break;
+                    default:
+                        lg('Saisie invalide');
+                        rl.close();
+                        this.start();
+                }
+            });
     }
 
+    //Recherche un collegue avec le nom et le matricule
     rechercherCollegues() {
-        rl.question('Nom recherché : ', function (saisie) {
-            let tableCollegue;
-            let i = 0;
-            service.rechercherColleguesParNom(saisie, function (colleguesTrouves) {
-                lg('>> Recherche en cours du nom ' + saisie);
-                //lg(colleguesTrouves);
-                tableCollegue = colleguesTrouves.length;
-                colleguesTrouves.forEach(function (element) {
-                    service.recherhcherCollegueParMatricule(element, function (colleguesTrouves) {
-                        lg(colleguesTrouves.nom + ' ' + colleguesTrouves.prenom + ' (' + colleguesTrouves.dateDeNaissance + ')');
-                        i++;
-                        if (i === tableCollegue) {
-                            start();
-                        }
-                    });
-                });
+        rl.question('Nom recherché : ')
+            .then(saisie => {
+                lg(`>> Recherche en cours du nom : ${saisie}`);
+                return service.rechercherColleguesParNom(saisie)
+            })
+            .then(collegues => {
+                lg(collegues)
+                this.start();
             });
-        })
     }
 
     ajouterCollegue() {
@@ -90,70 +84,68 @@ class Presentation {
             });
         });
     }
-}
 
+    //Ajoute un collegue. L'user doit fournir toutes les infos sauf le matricule
+    ajouterCollegue() {
+        let collegueAAjouter = {};
+        rl.question(' Nom : ')
+            .then(nom => {
+                collegueAAjouter.nom = nom;
+                rl.question('Prenom : ')
+                    .then(prenom => {
+                        collegueAAjouter.prenom = prenom;
+                        rl.question('Email : ')
+                            .then(email => {
+                                collegueAAjouter.email = email;
+                                rl.question('Date de naissance : ')
+                                    .then(dateDeNaissance => {
+                                        collegueAAjouter.dateDeNaissance = dateDeNaissance;
+                                        rl.question('Photo Url : ')
+                                            .then(photoUrl => {
+                                                collegueAAjouter.photoUrl = photoUrl;
+                                                return creerCollegue(collegueAAjouter)
+                                                    .then(collegueAAjouter => {
+                                                        lg(collegueAAjouter)
+                                                        this.start();
+                                                    })
+                                            })
+                                    })
+                            })
+                    })
+            })
+    }
 
-function modifierEmail() {
-    var email;
-    var nom;
-    rl.question('nom :',function (saisie) {
-        nom = saisie;
-        service.rechercherColleguesParNom(nom, function (colleguesTrouves) {
-            if(colleguesTrouves instanceof Array){
-                colleguesTrouves.forEach(function (value, index, array) {
-                   console.log(index+": "+value.nom+" "+value.prenoms+" "+value.dateDeNaissance)
+    //Modifie l'email d'un collegue. Le collegue choisi est sélectionné avec son matricule
+    modifierEmail() {
+        let collegueAModifier = {};
+        rl.question('>> Saisissez le matricule du collègue : ', (matricule) => {
+            collegueAModifier.matricule = matricule;
+            rl.question('>> Saisissez le nouvel e-mail du collègue : ', (email) => {
+                collegueAModifier.email = email;
+                service.modifierEmail(collegueAModifier);
+                service.rechercherCollegueParMatricule(matricule, (collegueTrouve) => {
+                    lg(`${collegueTrouve.nom}, ${collegueTrouve.prenoms}, '\nNouveau email :', ${collegue.email}`);
+                    this.start();
                 });
-                rl.question('id :',function (saisie) {
-                    var id = saisie;
-                    if(id<colleguesTrouves.length){
-                        var matricule = colleguesTrouves[id].matricule;
-                        rl.question('email :',function (saisie) {
-                            email = saisie;
-                            service.modifierEmail(matricule,email,function (res,body) {
-                                console.log(res.statusCode);
-                                console.log(body);
-                                start();
-                            });
-                        })
-                    }
-                    modifierEmail();
+            });
+        })
+    }
+    //Modifie l' url de la photo d'un collegue. Le collegue choisi est sélectionné avec son matricule
+    modifierPhoto() {
+        let collegueAModifier = {};
+        rl.question('>> Saisissez le matricule du collègue : ', (matricule) => {
+            collegueAModifier.matricule = matricule;
+            rl.question('>> Saisissez le nouvel url de la photo du collègue : ', (photoUrl) => {
+                collegueAModifier.photoUrl = photoUrl;
+                service.modifierPhotoUrl(collegueAModifier);
+                service.rechercherCollegueParMatricule(matricule, (collegueTrouve) => {
+                    lg(`${collegueTrouve.nom}, ${collegueTrouve.prenoms}, '\nNouvel Url de la photo :', ${collegue.photoUrl}`);
+                    this.start();
                 });
-            }
-            modifierEmail();
-        });
+            });
+        })
+    }
 
-    })
-}
-function modifierPhotoUrl() {
-    var photoUrl;
-    var nom;
-    rl.question('nom :',function (saisie) {
-        nom = saisie;
-        service.rechercherColleguesParNom(nom, function (colleguesTrouves) {
-            if(colleguesTrouves instanceof Array){
-                colleguesTrouves.forEach(function (value, index, array) {
-                    console.log(index+": "+value.nom+" "+value.prenoms+" "+value.dateDeNaissance)
-                });
-                rl.question('id :',function (saisie) {
-                    var id = saisie;
-                    if(id<colleguesTrouves.length){
-                        var matricule = colleguesTrouves[id].matricule;
-                        rl.question('photoUrl :',function (saisie) {
-                            photoUrl = saisie;
-                            service.modifierPhotoUrl(matricule,photoUrl,function (res,body) {
-                                console.log(res.statusCode);
-                                console.log(body);
-                                start();
-                            });
-                        })
-                    }
-                    modifierPhotoUrl();
-                });
-            }
-            modifierPhotoUrl();
-        });
-
-    })
 }
 
 exports.start = start;
