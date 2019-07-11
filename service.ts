@@ -15,7 +15,7 @@ export default class Service {
         return request(`https://clementsamnael-collegue-api.herokuapp.com/collegues/${matricule}`, { json: true });
     }
 
-    creerCollegue(collegue: Collegue) {
+    creerCollegue(collegue: Collegue) { 
         return request.post(`https://clementsamnael-collegue-api.herokuapp.com/collegues`, { json: true, body: collegue });
     }
 
