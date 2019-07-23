@@ -1,10 +1,11 @@
 import Service from './service';
-import { Collegue } from './domain';
-
+import Collegue from './domain';
+import readline from 'readline';
 
 const lg = console.log;
+const service = new Service();
 // récupération du module `readline`
-const readline = require('readline');
+
 
 // création d'un objet `rl` permettant de récupérer la saisie utilisateur
 const rl = readline.createInterface({
@@ -12,16 +13,11 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
-export default class Presentation {
+function start(){
+    authentifier();
+}
 
-    private service: Service;
-
-    constructor() {
-        this.service = new Service();
-    }
-
-
-    start(): void {
+    function menu() {
         lg(`1. Recherhche un collègue par nom
         2. Créer un collègue
         3. Modifier l\'email
@@ -30,10 +26,10 @@ export default class Presentation {
         rl.question('Votre choix ? : ', (saisie: string) => {
             switch (saisie) {
                 case '1':
-                    this.rechercherCollegues();
+                    rechercherCollegues();
                     break;
                 case '2':
-                    this.ajouterCollegue();
+                    ajouterCollegue();
                     break;
                 case '3':
                     lg('Fonction non implémentée');
@@ -49,59 +45,72 @@ export default class Presentation {
                     break;
                 default:
                     lg('Saisie invalide');
-                    rl.close();
-                    this.start();
+                    menu();
             }
         });
     }
 
     //Recherche un collegue avec le nom et le matricule
-    rechercherCollegues(): void {
-        rl.question('Nom recherché : ')
-            .then((saisie: string) => {
-                lg(`>> Recherche en cours du nom : ${saisie}`);
-                return this.service.rechercherColleguesParNom(saisie)
-            })
-            .then((collegues: string) => {
-                lg(collegues)
-                this.start();
-            });
+    function rechercherCollegues() {
+        rl.question('Nom recherché : ', (saisie: string) => {
+            lg(`>> Recherche en cours du nom : ${saisie}`);
+            service.rechercherColleguesParNom(saisie)
+                .then((collegueTrouve: Collegue[]) => {
+                    collegueTrouve.forEach((collegue: Collegue) => {
+                        lg((`Nom : ${collegue.nom} // Prénom : ${collegue.prenom} // Date de Naissance : ${collegue.dateDeNaissance}`))
+                        menu();
+                    })
+                })
+                .catch((error: any) => console.log(error));
+        });
     }
 
     //Ajoute un collegue. L'user doit fournir toutes les infos sauf le matricule
-    ajouterCollegue(): void {
+   function ajouterCollegue(): void {
         //Tableau d'un collegue réunissant toutes ses infos
-        let parametre: any = {};
-        rl.question('Nom : ')
-            .then((nom: string) => {
-                parametre.nom = nom
-                return rl.question('Prenom : ')
-                    .then((prenom: string) => {
-                        parametre.prenom = prenom;
-                        return rl.question('Email : ')
-                            .then((email: string) => {
-                                parametre.email = email;
-                                return rl.question('Date de naissance : ')
-                                    .then((dateDeNaissance: string) => {
-                                        parametre.dateDeNaissance = dateDeNaissance;
-                                        return rl.question('Photo Url : ')
-                                            .then((photoUrl: string) => {
-                                                parametre.photoUrl = photoUrl;
-                                                let collegue = new Collegue(parametre.nom, parametre.prenom, parametre.email, parametre.dateDeNaissance, parametre.photoUrl);
-                                                return this.service.creerCollegue(collegue)
-                                                    .then((collegueAAjouter: Collegue) => {
-                                                        lg(collegue)
-                                                        this.start();
-                                                    })
-                                            })
-                                    })
-                            })
-                    })
-            })
+        let collegue = new Collegue();
+        rl.question('Nom : ', function (saisie) {
+            collegue.nom = saisie
+            return rl.question('Prenom : ', function (saisie) {
+                collegue.prenom = saisie;
+                return rl.question('Email : ', function (saisie) {
+                    collegue.email = saisie;
+                    return rl.question('Date de naissance : ', function (saisie) {
+                        collegue.dateDeNaissance = saisie;
+                        return rl.question('Photo Url : ', function (saisie) {
+                            collegue.photoUrl = saisie;
+                            service.creerCollegue(collegue)
+                                .then((body) => {
+                                    lg(body);
+                                    menu();
+                                })
+                                .catch((err) => {
+                                    lg('Création impossible')
+                                });
+                        })
+                    });
+                });
+            });
+        });
+    }
+    function authentifier() {
+        rl.question('>> Veuillez saisir votre nom d\'utilisateur : ', (login:string) =>{
+            rl.question('>> Veuillez saisir votre mot de passe : ', (motDePasse:string) => {
+                service.authentifier(login, motDePasse)
+                .then(() => {;
+                    lg('Authentification réussie !');
+                    menu();
+                })
+                .catch((err) => {
+                    lg('Le nom d\'utilisateur/mot de passe saisi est invalide, veuillez recommencer.');
+                    authentifier();
+                });
+            });       
+        });
     }
 
     //Modifie l'email d'un collegue. Le collegue choisi est sélectionné avec son matricule
-    /*  modifierEmail():void {
+    /* function modifierEmail():void {
          let collegueAModifier: Collegue;
          rl.question('>> Saisissez le matricule du collègue : ', (matricule: string) => {
              collegueAModifier.matricule = matricule;
@@ -116,7 +125,7 @@ export default class Presentation {
          })
      } */
     //Modifie l' url de la photo d'un collegue. Le collegue choisi est sélectionné avec son matricule
-    /* modifierPhoto():void {
+    /* function modifierPhoto():void {
         let collegueAModifier: Collegue;
         rl.question('>> Saisissez le matricule du collègue : ', (matricule: string) => {
             collegueAModifier.matricule = matricule;
@@ -130,5 +139,4 @@ export default class Presentation {
             });
         })
     } */
-
-}
+export {start};
